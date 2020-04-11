@@ -1,0 +1,184 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="./css/media.css" />
+    <link rel="stylesheet" type="text/css" href="./css/aui.css" />
+  </head>
+  <style media="screen">
+  </style>
+  <body>
+    <div id="app">
+    <common-header :menutitle="menutitle"></common-header>
+    <div class="aui-content aui-margin-b-15">
+    <ul class="aui-list aui-list-in" v-html="addHtml">
+      </ul>
+    </div>
+    </div>
+
+  </body>
+    <script type="text/javascript" src="./script/api.js"></script>
+    <script type="text/javascript" src="./script/vue.min.js"></script>
+    <script type="text/javascript" src="./script/header.js"></script>
+  <script type="text/javascript">
+  
+  var vm ;
+  var regionFlag; //别的页面传递来的参数为触发对应事件使用
+
+    vm = new Vue({
+      el:"#app",
+      data:function(){
+        //获取页面名称
+        return{
+          menutitle:'区域树',
+          addHtml:''
+        }
+      },
+      methods:{
+          childHtmlHandler:function(data,spacebar,htmlCode){  //动态生成html代码方法
+            if (data) {
+              for (var i = 0; i < data.length; i++) {
+                var iconHtml =`&nbsp;&nbsp;&nbsp;&nbsp;` // 供下拉的按钮
+                if(data[i].children){
+                  iconHtml = `<i id="`+data[i].id+`" class="aui-iconfont aui-icon-right" onclick="moreRegion('`+data[i].id+`')"></i>`
+                }
+                  var needDisplay=`style="display:none;"` ;
+                  if (data[i].parentId == 0) {  //区域选项
+                    needDisplay = '' ;
+                  }
+                  var canSelect = `` ; // 父区域不能选
+                  // if (iconHtml != `&nbsp;&nbsp;&nbsp;&nbsp;`) {
+                  //   canSelect = `style="display:none;"` ;
+                  // }
+                  var fistDiv = `` ; // 一个分组的区域需要用一整个div包裹起来方便控制
+                  if (i==0) {
+                    fistDiv= `<div name="`+ data[i].parentId+`" `+ needDisplay+`>`;
+                  }
+                  var endDiv = `` ;  //
+                  if (i==(data.length-1)){
+                    endDiv='</div>'
+                  }
+                  htmlCode +=fistDiv+`
+                    <li class="aui-list-item"  >
+                          <div class="aui-list-item-inner">
+                              <div class="aui-list-item-title" >`+spacebar+iconHtml+data[i].name+`</div>
+                              <div class="aui-list-item-right" >
+                                  <div class="aui-label aui-label-info" onclick="selectRegion('`+data[i].id+`','`+data[i].name+`')" `+canSelect+`>选择</div>
+                              </div>
+                            </div>
+                        </li>
+                        `;
+                  htmlCode=this.childHtmlHandler(data[i].children,'&nbsp;&nbsp;&nbsp;'+spacebar,htmlCode);
+                  htmlCode = htmlCode + endDiv;
+              }
+            }
+            return htmlCode ;
+          }
+
+      },
+      created:function(){
+        
+        	var data = [
+					    {
+					        "id":"1066785370939715584",
+					        "name":"沈阳市",
+					        "parentId":0,
+					        "children":""
+					    },
+					    {
+					        "id":"1063957270050238464",
+					        "name":"长春市",
+					        "parentId":0,
+					        "children":""
+					    },
+					    {
+					        "id":"1063945592038121472",
+					        "name":"哈尔滨市",
+					        "parentId":0,
+					        "children":""
+					    },
+					    {
+					        "id":"1060308791261249536",
+					        "name":"铁岭市",
+					        "parentId":0,
+					        "children":[
+					            {
+					                "id":"1073685839221878784",
+					                "name":"铁岭县",
+					                "parentId":"1060308791261249536",
+					                "children":""
+					            },
+					            {
+					                "id":"1073685680080879616",
+					                "name":"西丰县",
+					                "parentId":"1060308791261249536",
+					                "children":""
+					            },
+					            {
+					                "id":"1073398253597147136",
+					                "name":"昌图县",
+					                "parentId":"1060308791261249536",
+					                "children":[
+					                    {
+					                        "id":"1073685877624410112",
+					                        "name":"太平镇",
+					                        "parentId":"1073398253597147136",
+					                        "children":""
+					                    },
+					                    {
+					                        "id":"1073409621367103488",
+					                        "name":"昌图镇",
+					                        "parentId":"1073398253597147136",
+					                        "children":[
+					                            {
+					                                "id":"1073695725111726080",
+					                                "name":"清华家园社区",
+					                                "parentId":"1073409621367103488",
+					                                "children":""
+					                            },
+					                            {
+					                                "id":"1073695698804137984",
+					                                "name":"金月湖社区",
+					                                "parentId":"1073409621367103488",
+					                                "children":""
+					                            }
+					                        ]
+					                    },
+					                    {
+					                        "id":"1073685635101483008",
+					                        "name":"老城镇",
+					                        "parentId":"1073398253597147136",
+					                        "children":""
+					                    }
+					                ]
+					            }
+        ]
+    }
+]
+            this.addHtml =this.childHtmlHandler(data,'',``);
+       
+      }
+    });
+    
+
+
+function selectRegion(regionId,regionName){
+		alert('选择的区域为:'+regionName)
+}
+function moreRegion(id){
+  if (id != 0) {
+  var a =document.getElementsByName(id) ;
+  var b = document.getElementById(id) ;
+  for (var i = 0; i < a.length; i++) {
+      a[i].style.display = a[i].style.display=="none"?"block":"none";
+      b.className =a[i].style.display=="none"?"aui-iconfont aui-icon-right":" aui-iconfont aui-icon-down " ;
+    }
+  }
+}
+
+  </script>
+  </html>
